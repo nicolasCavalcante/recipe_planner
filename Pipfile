@@ -7,6 +7,9 @@ name = "pypi"
 recipe_planner = {editable = true, path = "."}
 pytest = "*"
 typer = "*"
+pandas = "*"
+numpy = "*"
+openpyxl = "*"
 
 [dev-packages]
 black = "21.11b1"
@@ -18,7 +21,6 @@ pytest = "*"
 nbqa = "*"
 flake8 = "*"
 mkdocs = "*"
-
 
 [requires]
 python_version = "3.7"

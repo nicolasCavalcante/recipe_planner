@@ -1,0 +1,7 @@
+site_name: Recipe Planner
+site_url: https://example.com/
+repo_url: https://github.com/nicolasCavalcante/recipe_planner
+nav:
+  - Home: index.md
+  - About: about.md
+theme: readthedocs

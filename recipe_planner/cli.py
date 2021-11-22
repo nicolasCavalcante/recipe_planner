@@ -1,23 +1,21 @@
+from datetime import datetime
+
 import typer
 
-app = typer.Typer()
+from recipe_planner.planner import DATA_DEMO_PATH, DATA_PATH, PlannerDB
 
 
-@app.command()
-def hello(name: str = typer.Option("")):
-    if name != "":
-        typer.echo(f"Hello {name}")
-    else:
-        typer.echo("Hello World!")
+def main(
+    meals_spreadsheet_name: str = "Receitas",
+    date: datetime = datetime.now(),
+    demo: bool = False,
+):
+    path = DATA_DEMO_PATH if demo else DATA_PATH
+    db = PlannerDB(path / f"{meals_spreadsheet_name}.xlsx")
+    menudb = db.change_menu(date)
+    print(menudb)
 
 
-@app.command()
-def bye(name: str = typer.Option("")):
-    if name != "":
-        typer.echo(f"Bye {name}")
-    else:
-        typer.echo("Goodbye!")
-
-
+app = typer.run(main)
 if __name__ == "__main__":
-    app()
+    main()

@@ -10,6 +10,7 @@ typer = "*"
 pandas = "*"
 numpy = "*"
 openpyxl = "*"
+tabulate = "*"
 
 [dev-packages]
 black = "21.11b1"

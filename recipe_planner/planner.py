@@ -29,13 +29,13 @@ class PlannerDB:
         menudb = MenuDB(date)
         if menudb.load():
             if not update:
-                return menudb
+                return menudb, False
             self.mealsdb.increment_meals(menudb.db.Prato, -1)
         meals = self.mealsdb.pick_week_meals(self.receitas)
         menudb.update(meals)
         menudb.save()
         self.mealsdb.save()
-        return menudb
+        return menudb, True
 
 
 class MealsDB:
@@ -182,10 +182,10 @@ def main(
 ):
     path = DATA_DEMO_PATH if demo else DATA_PATH
     db = PlannerDB(path / f"{meals_spreadsheet_name}.xlsx")
-    menudb = db.change_menu(
+    menudb, updated = db.change_menu(
         datetime.now() + timedelta(weeks_in_future * 7), update
     )
-    return menudb, datetime.strptime(menudb.path.stem, "%Y-%m-%d")
+    return menudb, datetime.strptime(menudb.path.stem, "%Y-%m-%d"), updated
 
 
 if __name__ == "__main__":

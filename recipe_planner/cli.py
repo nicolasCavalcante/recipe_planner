@@ -17,12 +17,14 @@ def main(
     configpath = Path(__file__).parent.parent / "config/api_config.json"
     with open(configpath, "r") as f:
         cfg = json.load(f)
-    menudb, date = planner.main(
+    menudb, date, updated = planner.main(
         meals_spreadsheet_name,
         weeks_in_future + 1,
         demo,
         update,
     )
+    if not updated:
+        return
     from_date, to_date = date, date + timedelta(7)
     text = (
         f"Calendário da semana do dia {from_date.strftime('%d/%m/%Y')}"

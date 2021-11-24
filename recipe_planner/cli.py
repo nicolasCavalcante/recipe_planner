@@ -1,21 +1,43 @@
-from datetime import datetime
+import json
+from datetime import timedelta
+from pathlib import Path
 
+import requests
 import typer
 
-from recipe_planner.planner import DATA_DEMO_PATH, DATA_PATH, PlannerDB
+import recipe_planner.planner as planner
 
 
 def main(
     meals_spreadsheet_name: str = "Receitas",
-    date: datetime = datetime.now(),
+    weeks_in_future: int = 0,
     demo: bool = False,
+    update: bool = True,
 ):
-    path = DATA_DEMO_PATH if demo else DATA_PATH
-    db = PlannerDB(path / f"{meals_spreadsheet_name}.xlsx")
-    menudb = db.change_menu(date)
-    print(menudb)
+    configpath = Path(__file__).parent.parent / "config/api_config.json"
+    with open(configpath, "r") as f:
+        cfg = json.load(f)
+    menudb, date = planner.main(
+        meals_spreadsheet_name,
+        weeks_in_future + 1,
+        demo,
+        update,
+    )
+    from_date, to_date = date, date + timedelta(7)
+    text = (
+        f"Calendário da semana do dia {from_date.strftime('%d/%m/%Y')}"
+        f" ao dia {to_date.strftime('%d/%m/%Y')}\n{menudb}"
+    )
+    print(text)
+    requests.post(
+        f"{cfg['url']}?phone={cfg['phone']}"
+        f"&text={text}&apikey={cfg['apikey']}",
+    )
 
 
-app = typer.run(main)
+def app():
+    typer.run(main)
+
+
 if __name__ == "__main__":
-    main()
+    main(demo=True)

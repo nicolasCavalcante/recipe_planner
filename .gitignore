@@ -3,6 +3,7 @@ __pycache__
 .doit.db*
 TODO.txt
 db/
+config/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

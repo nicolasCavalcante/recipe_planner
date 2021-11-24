@@ -23,9 +23,13 @@ class PlannerDB:
         self.mealsdb = MealsDB()
         self.receitas = pd.read_excel(receitaspath)
 
-    def change_menu(self, date: datetime = datetime.now()):
+    def change_menu(
+        self, date: datetime = datetime.now(), update: bool = True
+    ):
         menudb = MenuDB(date)
         if menudb.load():
+            if not update:
+                return menudb
             self.mealsdb.increment_meals(menudb.db.Prato, -1)
         meals = self.mealsdb.pick_week_meals(self.receitas)
         menudb.update(meals)
@@ -166,14 +170,23 @@ class MenuDB:
         self.db.to_csv(self.path)
 
     def __str__(self):
+        return tabulate(self.db, tablefmt="simple", headers="keys")
         return tabulate(self.db, tablefmt="pretty", headers="keys")
 
 
-def main():
-    db = PlannerDB(DATA_DEMO_PATH / "Receitas.xlsx")
-    menudb = db.change_menu()
-    print(menudb)
+def main(
+    meals_spreadsheet_name: str = "Receitas",
+    weeks_in_future: int = 0,
+    demo: bool = False,
+    update: bool = True,
+):
+    path = DATA_DEMO_PATH if demo else DATA_PATH
+    db = PlannerDB(path / f"{meals_spreadsheet_name}.xlsx")
+    menudb = db.change_menu(
+        datetime.now() + timedelta(weeks_in_future * 7), update
+    )
+    return menudb, datetime.strptime(menudb.path.stem, "%Y-%m-%d")
 
 
 if __name__ == "__main__":
-    main()
+    print(main(demo=True))
